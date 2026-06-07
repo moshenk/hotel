@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>寻倪-酒店后台管理系统</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/login.css">
+</head>
+<body>
+    <div class="login-container">
+        <!-- 左侧背景与文字 -->
+        <div class="login-left">
+            <div class="title-box">
+                <h1>莫斯康-酒店后台管理系统</h1>
+            </div>
+            <p class="desc">登录来管理你的住宿房源</p>
+            <p class="tip">您的住宿房源将在app平台进行售卖</p>
+        </div>
+
+        <!-- 右侧登录表单 -->
+        <div class="login-right">
+            <div class="login-card">
+                <div class="logo">
+                    <img src="./images/logo.png" alt="酒店logo" class="logo-img">
+                </div>
+                <h2 class="system-name">莫斯康-酒店后台管理系统</h2>
+                
+                <form class="login-form">
+                    <div class="form-item">
+                        <input type="text" placeholder="用户名/账号" class="form-input">
+                    </div>
+                    <div class="form-item">
+                        <input type="password" placeholder="密码" class="form-input">
+                    </div>
+                    <div class="form-item captcha">
+                        <input type="text" placeholder="请输入验证码" class="form-input">
+                        <div class="captcha-img">
+                            <!-- 验证码占位，实际项目中会用后端生成的图片 -->
+                            <span>aQ7x</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="login-btn">立即登录</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
