@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <title>寻倪-酒店后台管理系统</title>
+    <script src="./js/login.js" defer></script>
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/login.css">
 </head>
@@ -26,15 +26,15 @@
                 </div>
                 <h2 class="system-name">莫斯康-酒店后台管理系统</h2>
                 
-                <form class="login-form">
+                <form class="login-form" id="loginForm">
                     <div class="form-item">
-                        <input type="text" placeholder="用户名/账号" class="form-input">
+                        <input type="text" id="username" placeholder="用户名/账号" class="form-input">
                     </div>
                     <div class="form-item">
-                        <input type="password" placeholder="密码" class="form-input">
+                        <input type="password" id="password" placeholder="密码" class="form-input">
                     </div>
                     <div class="form-item captcha">
-                        <input type="text" placeholder="请输入验证码" class="form-input">
+                        <input type="text" id="captcha" placeholder="请输入验证码" class="form-input">
                         <div class="captcha-img" id="captchaImg">
                             <span>加载中...</span>
                         </div>
