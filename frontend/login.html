@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <title>寻倪-酒店后台管理系统</title>
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/login.css">
@@ -34,9 +35,8 @@
                     </div>
                     <div class="form-item captcha">
                         <input type="text" placeholder="请输入验证码" class="form-input">
-                        <div class="captcha-img">
-                            <!-- 验证码占位，实际项目中会用后端生成的图片 -->
-                            <span>aQ7x</span>
+                        <div class="captcha-img" id="captchaImg">
+                            <span>加载中...</span>
                         </div>
                     </div>
                     <button type="submit" class="login-btn">立即登录</button>
