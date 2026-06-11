@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const db = require('./db');
 
-router.post('/auth/login', (req, res) => {
+router.post('/auth/login', async (req, res) => {
     const { username, password, captcha, captchaId } = req.body;
     const captchaStore = req.app.locals.captchaStore;
 
@@ -16,15 +17,23 @@ router.post('/auth/login', (req, res) => {
     }
     captchaStore.delete(captchaId);
 
-    if (username !== 'admin' || password !== '123456') {
-        return res.json({ code: 400, message: '用户名或密码错误', data: null });
+    let user;
+    try {
+        const [rows] = await db.query('SELECT id,username FROM msk_user WHERE username=? AND password=?',[username,password]);
+        if(rows.length === 0){
+            return res.json({ code: 400, message: '用户名或密码错误', data: null });
+        }
+        user = rows[0];
+    } catch (err) {
+        return res.json({code:500,message:'数据库查询失败',data:null});
     }
 
     const token = jwt.sign(
-        { userId: 1, username: 'admin' },
+        { userId: user.id, username: user.username },
         'hotel-secret-key-2026',
         { expiresIn: '2h' }
     );
+
 
     res.json({
         code: 200,

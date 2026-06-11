@@ -9,14 +9,12 @@ body {
     background-color: #f0f2f5;
 }
 
-/* 整体容器：左右分栏，占满全屏 */
 .login-container {
     display: flex;
     width: 100vw;
     height: 100vh;
 }
 
-/* 左侧背景区域 */
 .login-left {
     flex: 1;
     background: url("../images/login.png") center/cover no-repeat;
@@ -62,7 +60,6 @@ body {
     opacity: 0.8;
 }
 
-/* 右侧登录面板 */
 .login-right {
     width: 420px;
     background-color: #fff;
@@ -81,7 +78,7 @@ body {
 .logo-img {
     width: 100px;
     height: 100px;
-    object-fit: contain; /* 保持图片比例，不变形 */
+    object-fit: contain;
 }
 
 .system-name {
@@ -91,7 +88,6 @@ body {
     font-weight: normal;
 }
 
-/* 表单样式 */
 .form-item {
     margin-bottom: 16px;
 }
@@ -108,7 +104,6 @@ body {
     border-color: #2563eb;
 }
 
-/* 验证码行布局 */
 .captcha {
     display: flex;
     gap: 10px;
@@ -128,7 +123,6 @@ body {
     color: #666;
 }
 
-/* 登录按钮 */
 .login-btn {
     width: 100%;
     height: 42px;

@@ -13,7 +13,7 @@ router.get('/captcha', (req, res) => {
   res.json({
     code: 200,
     message: '获取成功',
-    data: { captchaId, captchaImg: `data:image/svg+xml;base64,${base64Img}` }
+    data: { captchaId,captchaImg: `data:image/svg+xml;base64,${base64Img }` }
   });
 });
 

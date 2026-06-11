@@ -16,5 +16,4 @@ app.use('/api', loginRouter);
 
 app.listen(PORT, () => {
     console.log(`✅ 后端服务器已启动，地址：http://localhost:${PORT}`);
-    console.log('🔑 测试账号：admin / 123456');
 });
