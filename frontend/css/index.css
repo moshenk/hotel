@@ -1,0 +1,220 @@
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Microsoft Yahei", sans-serif;
+    }
+
+    body {
+        display: flex;
+        height: 100vh;
+        background-color: #f5f7fa;
+    }
+
+    /* 侧边栏 */
+    .sidebar {
+        width: 180px;
+        background-color: #2f4056;
+        color: #fff;
+        padding-top: 20px;
+    }
+
+    .sidebar .logo {
+        text-align: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #3a4b63;
+        margin-bottom: 20px;
+    }
+
+    .sidebar .logo h1 {
+        font-size: 16px;
+        font-weight: normal;
+    }
+
+    .sidebar .logo p {
+        font-size: 12px;
+        color: #a3b1c2;
+    }
+
+    .sidebar ul {
+        list-style: none;
+    }
+
+    .sidebar ul li {
+        padding: 12px 20px;
+        cursor: pointer;
+        font-size: 14px;
+        color: #c0c6cc;
+    }
+
+    .sidebar ul li.active {
+        background-color: #2385bb;
+        color: #fff;
+    }
+
+    .sidebar ul li:hover {
+        background-color: #3a4b63;
+    }
+
+    /* 主内容区 */
+    .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* 顶部导航 */
+    .top-nav {
+        height: 50px;
+        background-color: #fff;
+        border-bottom: 1px solid #e6e6e6;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        justify-content: space-between;
+    }
+
+    .top-nav .tabs {
+        display: flex;
+        gap: 2px;
+    }
+
+    .top-nav .tabs button {
+        padding: 8px 16px;
+        border: none;
+        background-color: #e6e6e6;
+        color: #333;
+        cursor: pointer;
+        border-radius: 4px 4px 0 0;
+    }
+
+    .top-nav .tabs button.active {
+        background-color: #2385bb;
+        color: #fff;
+    }
+
+    .top-nav .user-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+
+    .top-nav .user-info .avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: #ff6b6b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+    }
+
+    .content {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+    }
+
+    .welcome-bar {
+        background-color: #2385bb;
+        color: #fff;
+        padding: 15px 20px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .welcome-bar .weather {
+        background-color: rgba(255, 255, 255, 0.2);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+    }
+
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        padding: 20px;
+        border-radius: 4px;
+        color: #fff;
+        text-align: center;
+    }
+
+    .card.blue {
+        background-color: #3498db;
+    }
+
+    .card.green {
+        background-color: #2ecc71;
+    }
+
+    .card.orange {
+        background-color: #f39c12;
+    }
+
+    .card.purple {
+        background-color: #9b59b6;
+    }
+
+    .card.red {
+        background-color: #e74c3c;
+    }
+
+    .card .title {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .card .value {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    /* 图表区域 */
+    .charts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .chart-box {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .chart-box h3 {
+        font-size: 16px;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    .chart-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .chart-tabs button {
+        padding: 6px 12px;
+        border: none;
+        background-color: #e6e6e6;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
+    .chart-tabs button.active {
+        background-color: #2385bb;
+        color: #fff;
+    }

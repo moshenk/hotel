@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>莫斯康_酒店后台管理系统</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/index.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <h1>莫斯康_酒店后台管理系统</h1>
+            <p>v1.0.0</p>
+        </div>
+        <ul id="sidebarMenu">
+            <li class="active" data-page="home">首页</li>
+            <li data-page="checkin">入住管理</li>
+            <li data-page="room">客房管理</li>
+            <li data-page="status">房态面板</li>
+            <li data-page="finance">财务管理</li>
+            <li data-page="employee">员工注册</li>
+            <li data-page="user">用户管理</li>
+        </ul>
+    </div>
+
+    <div class="main">
+        <div class="top-nav">
+            <div class="tabs">
+                <button class="active">首页</button>
+                <button>用户管理</button>
+            </div>
+            <div class="user-info">
+                <div class="avatar">a</div>
+                <span id="username">admin</span>
+            </div>
+        </div>
+
+        <!-- ✅ 只有这个content区域会被局部刷新 -->
+        <div class="content" id="mainContent">
+            <!-- 这里的内容会被JS动态替换 -->
+        </div>
+    </div>
+
+    <!-- 引入外部JS文件（路径正确：html和js文件夹平行） -->
+    <script src="./js/index.js"></script>
+</body>
+</html>
