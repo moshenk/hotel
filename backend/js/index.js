@@ -27,13 +27,24 @@ router.get('/stats', async (req, res) => {
     const [incomeRes] = await db.query(`SELECT IFNULL(SUM(total_price),0) income FROM checkin WHERE DATE(checkin_time)=?`,[today]);
     const todayIncome = incomeRes[0].income;
 
-    // 5.近7天入住趋势
-    const trend = await db.query(`
-      SELECT DATE(checkin_time) AS check_in_date,COUNT(*) cnt 
-      FROM checkin 
-      WHERE DATE(checkin_time) >= DATE_SUB(?,INTERVAL 6 DAY)
-      GROUP BY DATE(checkin_time) ORDER BY DATE(checkin_time)
-    `,[today]);
+        // 5.今日0-24时每小时入住人数曲线
+    const [hourTrend] = await db.query(`
+      SELECT HOUR(checkin_time) AS hour, COUNT(*) AS count
+      FROM checkin
+      WHERE DATE(checkin_time) = ?
+      GROUP BY HOUR(checkin_time)
+      ORDER BY hour ASC
+    `, [today]);
+    // 补全0~23全部小时，无数据填充0
+    const fullHourData = [];
+    for(let h = 0; h < 24; h++){
+      const match = hourTrend.find(row => row.hour === h);
+      fullHourData.push({
+        hour: h,
+        count: match ? match.count : 0
+      });
+    }
+    const trend = fullHourData;
 
     // 6.客源分布：你表没有source字段，这里临时返回空数组，不报错
     const source = [];

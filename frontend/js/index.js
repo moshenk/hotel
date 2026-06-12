@@ -165,22 +165,20 @@ function renderHomePage() {
     `;
 }
 
-// ========== 新增：动态绘制折线图（根据后端trend数组生成SVG） ==========
 function drawLineChart(){
     if(!homeStats?.trend || homeStats.trend.length === 0) return;
     const box = document.getElementById('lineChartBox');
     const trendList = homeStats.trend;
     const w = 400, h = 200, padX = 50, padY = 20;
-    const maxCount = Math.max(...trendList.map(item=>item.cnt), 1);
+    const maxCount = Math.max(...trendList.map(item=>item.count), 1);
 
     let pointStr = '';
     let textHtml = '';
     trendList.forEach((item, idx)=>{
-        // 坐标换算
         const x = padX + idx * ((w - padX*2) / (trendList.length - 1 || 1));
-        const y = h - padY - (item.cnt / maxCount) * (h - padY*2);
+        const y = h - padY - (item.count / maxCount) * (h - padY*2);
         pointStr += `${x},${y} `;
-        textHtml += `<text x="${x}" y="${h-5}" font-size="10">${item.check_in_date}</text>`;
+        textHtml += `<text x="${x}" y="${h-5}" font-size="10">${item.hour}时</text>`;
     })
 
     box.innerHTML = `
