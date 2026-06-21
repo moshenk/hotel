@@ -7,9 +7,9 @@ router.get('/stats', async (req, res) => {
   try {
     const today = new Date().toISOString().split('T')[0];
 
-    // 1.今日入住：checkin_time日期等于今天，状态1=入住中
-    const [inRes] = await db.query(`SELECT COUNT(*) num FROM checkin WHERE DATE(checkin_time)=? AND status=1`,[today]);
-    const todayIn = inRes[0].num;
+    // 1.当前入住：所有入住中 status=1 的订单总数
+const [inRes] = await db.query(`SELECT COUNT(*) num FROM checkin WHERE status=1`);
+const todayIn = inRes[0].num;
 
     // 2.今日退房：checkout_time日期等于今天，状态2=已退房
     const [outRes] = await db.query(`SELECT COUNT(*) num FROM checkin WHERE DATE(checkout_time)=? AND status=2`,[today]);

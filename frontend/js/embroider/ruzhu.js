@@ -1,3 +1,5 @@
+let editTargetId = null;
+
 window.checkoutOrder = async function(orderId){
     if(!confirm('确认办理退房？')) return;
     try {
@@ -13,6 +15,19 @@ window.checkoutOrder = async function(orderId){
     }catch(err){
         alert('网络异常，退房失败');
     }
+}
+
+// 打开独立编辑弹窗，回填原有数据
+window.openEditWin = function(orderId, name, idcard){
+    editTargetId = orderId;
+    const editModal = document.getElementById('editModal');
+    const nameInput = document.getElementById('editName');
+    const idcardInput = document.getElementById('editIdcard');
+    // 回填数据
+    nameInput.value = name;
+    idcardInput.value = idcard;
+    // 显示编辑弹窗
+    editModal.style.display = 'flex';
 }
 
 function renderCheckinPage() {
@@ -62,6 +77,27 @@ function renderCheckinPage() {
                     </form>
                 </div>
             </div>
+
+            <!-- 弹窗2：独立编辑弹窗（全新单独窗口，只修改姓名身份证） -->
+            <div id="editModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;">
+                <div style="width:420px;background:#fff;padding:24px;border-radius:8px;">
+                    <h3 style="margin-bottom:20px;">修改入住信息</h3>
+                    <form id="editForm">
+                        <div style="margin-bottom:16px;">
+                            <label>客人姓名</label>
+                            <input type="text" id="editName" required style="width:100%;padding:8px;margin-top:6px;">
+                        </div>
+                        <div style="margin-bottom:20px;">
+                            <label>身份证号</label>
+                            <input type="text" id="editIdcard" maxlength="18" required style="width:100%;padding:8px;margin-top:6px;">
+                        </div>
+                        <div style="text-align:right;gap:10px;display:flex;justify-content:flex-end;">
+                            <button type="button" id="closeEditModal" style="padding:8px 16px;border:1px solid #ccc;background:#fff;border-radius:4px;">取消</button>
+                            <button type="submit" style="padding:8px 16px;background:#409eff;color:#fff;border:none;border-radius:4px;">保存修改</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     `;
 }
@@ -86,7 +122,7 @@ async function loadCheckinData(){
                     <td style="padding:12px;border:1px solid #eee;">${item.room_type}</td>
                     <td style="padding:12px;border:1px solid #eee;">${item.checkin_time}</td>
                     <td style="padding:12px;border:1px solid #eee;">
-                        <button class="btn btn-edit">编辑</button>
+                        <button class="btn btn-edit" onclick="openEditWin(${item.id},'${item.guest_name}','${item.id_card}')">编辑</button>
                         <button class="btn btn-delete" onclick="checkoutOrder(${item.id})">退房</button>
                     </td>
                 </tr>
@@ -106,7 +142,7 @@ async function bindCheckinModalEvent(){
     const form = document.getElementById('checkinAddForm');
     const roomSel = document.getElementById('roomSelect');
 
-    // 新增这一行，页面初始化强制隐藏弹窗
+    // 强制弹窗页面初始化都隐藏
     modal.style.display = 'none';
     
     // 打开弹窗
@@ -166,9 +202,57 @@ async function bindCheckinModalEvent(){
             alert('提交失败，请检查后端服务');
         }
     }
+
+        // ========== 编辑弹窗绑定事件 ==========
+    const editModal = document.getElementById('editModal');
+    const closeEditBtn = document.getElementById('closeEditModal');
+    const editForm = document.getElementById('editForm');
+
+    editModal.style.display = 'none';
+
+    // 关闭编辑弹窗
+    closeEditBtn.onclick = ()=>{
+        editModal.style.display = 'none';
+        editForm.reset();
+    };
+
+    // 编辑表单提交
+    editForm.onsubmit = async (e)=>{
+        e.preventDefault();
+        const newName = document.getElementById('editName').value.trim();
+        const newIdcard = document.getElementById('editIdcard').value.trim();
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/checkin/edit`,{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                    Authorization:`Bearer ${token}`
+                },
+                body:JSON.stringify({
+                    id: editTargetId,
+                    guestName: newName,
+                    idCard: newIdcard
+                })
+            });
+            const json = await res.json();
+            alert(json.message);
+            editModal.style.display = 'none';
+            loadCheckinData(); // 刷新表格
+        }catch(err){
+            alert('修改失败，请检查后端服务');
+            console.error(err);
+        }
+    }
 }
 
 window.initCheckinPage = async function(){
-    bindCheckinModalEvent(); // 先绑定所有弹窗DOM事件
-    await loadCheckinData(); // 再加载表格数据
+    // 1. 先渲染入住管理完整页面（包含两个弹窗DOM）
+    document.getElementById("mainContent").innerHTML = renderCheckinPage();
+    // 新增兜底：渲染完立刻强制隐藏编辑弹窗
+    const tempEdit = document.getElementById("editModal");
+    if(tempEdit) tempEdit.style.display = 'none';
+    // 2. DOM存在后，再绑定弹窗/按钮事件
+    await bindCheckinModalEvent();
+    // 3. 最后加载表格数据
+    await loadCheckinData();
 }

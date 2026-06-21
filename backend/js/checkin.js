@@ -92,6 +92,22 @@ exports.checkoutOrder = async (req, res) => {
   }
 };
 
+// 5. 编辑入住信息（仅修改姓名、身份证）
+exports.editCheckin = async (req, res) => {
+  const { id, guestName, idCard } = req.body;
+  try {
+    const sql = `UPDATE checkin SET guest_name = ?, id_card = ? WHERE id = ? AND status = 1`;
+    const [result] = await pool.query(sql, [guestName, idCard, id]);
+    if (result.affectedRows === 0) {
+      return res.json({ code: 400, message: '订单不存在或已退房，无法编辑' });
+    }
+    res.json({ code: 200, message: '信息修改成功' });
+  } catch (err) {
+    console.error(err);
+    res.json({ code: 500, message: '修改失败' });
+  }
+};
+
 const express = require('express');
 const router = express.Router();
 
@@ -100,5 +116,6 @@ router.get('/checkin/list', exports.getCheckinList);
 router.get('/room/free', exports.getFreeRoom);
 router.post('/checkin/add', exports.addCheckin);
 router.post('/checkin/checkout/:id', exports.checkoutOrder);
+router.post('/checkin/edit', exports.editCheckin);
 
 module.exports = router;
