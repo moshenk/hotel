@@ -168,6 +168,21 @@ exports.getEmployeeList = async (req, res) => {
   }
 }
 
+// 7. 获取所有房间（房态面板专用）
+exports.getAllRoom = async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT id, room_number, room_type, price, status
+      FROM room
+      ORDER BY room_number ASC
+    `);
+    res.json({ code: 200, data: rows });
+  } catch (err) {
+    console.error(err);
+    res.json({ code: 500, message: '查询全部房间失败' });
+  }
+};
+
 const express = require('express');
 const router = express.Router();
 
@@ -181,5 +196,6 @@ router.get('/room/manage', exports.getRoomManageData);
 router.post('/room/clean/:id', exports.setRoomClean);
 router.get('/room/cleaning', exports.getCleaningRoom);
 router.get('/employee/list', exports.getEmployeeList);
+router.get('/room/all', exports.getAllRoom);
 
 module.exports = router;

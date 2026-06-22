@@ -89,6 +89,7 @@ function renderPage(pageName) {
             break;
         case 'status':
             content.innerHTML = renderStatusPage();
+            initStatusPage();
             break;
         case 'finance':
             content.innerHTML = renderFinancePage();
