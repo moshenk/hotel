@@ -1,8 +1,7 @@
-// 全局常量
-const BACKEND_URL = 'http://localhost:3000';
-const token = localStorage.getItem('hotel_token');
-const userInfo = JSON.parse(localStorage.getItem('hotel_user')) || {};
-
+// 全局常量 挂载window，子页面通用
+window.BACKEND_URL = 'http://localhost:3000';
+window.token = localStorage.getItem('hotel_token');
+window.userInfo = JSON.parse(localStorage.getItem('hotel_user')) || {};
 // 存储后端首页实时统计数据
 let homeStats = null;
 
@@ -86,6 +85,7 @@ function renderPage(pageName) {
             break;
         case 'room':
             content.innerHTML = renderRoomPage();
+            initKefangPage(); 
             break;
         case 'status':
             content.innerHTML = renderStatusPage();

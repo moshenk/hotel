@@ -108,6 +108,66 @@ exports.editCheckin = async (req, res) => {
   }
 };
 
+// 6. 客房管理页面数据（新增接口）
+exports.getRoomManageData = async (req, res) => {
+  try {
+    // 1. 查询空闲/打扫房间 status 0、1
+    const [freeRoomList] = await pool.query(`
+      SELECT id, room_number, room_type, price, status
+      FROM room
+      WHERE status IN (0, 1)
+      ORDER BY room_number ASC
+    `);
+
+    // 2. 查询已入住占用房间，关联入住表拿客人信息
+    const [usedRoomList] = await pool.query(`
+      SELECT r.room_number, r.status, c.guest_name, c.checkin_time
+      FROM room r
+      LEFT JOIN checkin c ON r.id = c.room_id AND c.status = 1
+      WHERE r.status = 2
+      ORDER BY r.room_number ASC
+    `);
+
+    return res.json({
+      code: 200,
+      data: {
+        freeRooms: freeRoomList,
+        usedRooms: usedRoomList
+      }
+    });
+  } catch (err) {
+    console.error("客房管理查询失败：", err);
+    return res.json({ code: 500, message: "客房数据查询失败" });
+  }
+};
+// 分配打扫：房间改为打扫中 status=1
+exports.setRoomClean = async (req,res)=>{
+  const id = req.params.id;
+  await pool.query('UPDATE room SET status=0 WHERE id=?',[id]);
+  res.json({code:200,message:'打扫完成，房间已更新为空闲状态'});
+}
+// 获取打扫中 status=1 的房间，对应原来的getFreeRoom
+exports.getCleaningRoom = async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT id,room_number FROM room WHERE status = 1 ORDER BY room_number');
+    res.json({ code: 200, data: rows });
+  } catch (err) {
+    res.json({ code: 500, message: '查询打扫中房间失败' });
+  }
+};
+// 查询所有员工
+exports.getEmployeeList = async (req, res) => {
+  try {
+    const [list] = await pool.query("SELECT id,username FROM msk_user");
+    res.json({
+      code: 200,
+      data: list
+    })
+  } catch (err) {
+    res.json({code:500,message:"查询员工失败"})
+  }
+}
+
 const express = require('express');
 const router = express.Router();
 
@@ -117,5 +177,9 @@ router.get('/room/free', exports.getFreeRoom);
 router.post('/checkin/add', exports.addCheckin);
 router.post('/checkin/checkout/:id', exports.checkoutOrder);
 router.post('/checkin/edit', exports.editCheckin);
+router.get('/room/manage', exports.getRoomManageData);
+router.post('/room/clean/:id', exports.setRoomClean);
+router.get('/room/cleaning', exports.getCleaningRoom);
+router.get('/employee/list', exports.getEmployeeList);
 
 module.exports = router;

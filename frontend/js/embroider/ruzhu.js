@@ -120,7 +120,16 @@ async function loadCheckinData(){
                     <td style="padding:12px;border:1px solid #eee;">${item.guest_name}</td>
                     <td style="padding:12px;border:1px solid #eee;">${item.id_card}</td>
                     <td style="padding:12px;border:1px solid #eee;">${item.room_type}</td>
-                    <td style="padding:12px;border:1px solid #eee;">${item.checkin_time}</td>
+                    <td style="padding:12px;border:1px solid #eee;">${(()=>{
+                        const d = new Date(item.checkin_time);
+                        const year = d.getFullYear();
+                        const month = String(d.getMonth() + 1).padStart(2, '0');
+                        const day = String(d.getDate()).padStart(2, '0');
+                        const h = String(d.getHours()).padStart(2, '0');
+                        const m = String(d.getMinutes()).padStart(2, '0');
+                        const s = String(d.getSeconds()).padStart(2, '0');
+                        return `${year}-${month}-${day} ${h}:${m}:${s}`;
+                    })()}</td>
                     <td style="padding:12px;border:1px solid #eee;">
                         <button class="btn btn-edit" onclick="openEditWin(${item.id},'${item.guest_name}','${item.id_card}')">编辑</button>
                         <button class="btn btn-delete" onclick="checkoutOrder(${item.id})">退房</button>

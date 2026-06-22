@@ -10,9 +10,8 @@ function renderHomePage() {
         <div class="welcome-bar">
             <div>
                 <p>欢迎回来，${uname}</p>
-                <p style="font-size: 12px; margin-top: 4px;">晚上好，今天是2026年06月12日，星期五，祝您工作愉快！</p>
+                <p style="font-size: 12px; margin-top: 4px;">祝您工作愉快！</p>
             </div>
-            <div class="weather">36℃ 多云</div>
         </div>
         <div class="cards">
             <div class="card blue">
@@ -36,14 +35,10 @@ function renderHomePage() {
                 <div class="value">${todayIncome}元</div>
             </div>
         </div>
-        <div class="charts">
-            <div class="chart-box">
+        <div class="charts" style="display:block;width:100%;">
+            <div class="chart-box" style="width:100%;">
                 <h3>入住率趋势</h3>
                 <div style="height: 200px; position: relative;" id="lineChartBox"></div>
-            </div>
-            <div class="chart-box">
-                <h3>客源分布图</h3>
-                <div style="height: 200px; display: flex; align-items: center; justify-content: center;" id="pieChartBox"></div>
             </div>
         </div>
     `;
@@ -53,18 +48,21 @@ function drawLineChart(){
     if(!homeStats?.trend || homeStats.trend.length === 0) return;
     const box = document.getElementById('lineChartBox');
     const trendList = homeStats.trend;
-    const w = 400, h = 200, padX = 50, padY = 20;
+    // 去掉固定宽w=400，改用容器真实宽度
+    const w = box.clientWidth, h = 200, padX = 50, padY = 20;
     const maxCount = Math.max(...trendList.map(item=>item.count), 1);
 
     let pointStr = '';
     let textHtml = '';
     trendList.forEach((item, idx)=>{
+        // 横坐标按容器完整宽度均分，铺满左右
         const x = padX + idx * ((w - padX*2) / (trendList.length - 1 || 1));
         const y = h - padY - (item.count / maxCount) * (h - padY*2);
         pointStr += `${x},${y} `;
         textHtml += `<text x="${x}" y="${h-5}" font-size="10">${item.hour}时</text>`;
     })
 
+    // svg宽高100%自适应父容器
     box.innerHTML = `
         <svg width="100%" height="100%" viewBox="0 0 ${w} ${h}">
             <polyline points="${pointStr.trim()}" fill="none" stroke="#3498db" stroke-width="2"/>
