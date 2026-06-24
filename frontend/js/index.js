@@ -93,6 +93,7 @@ function renderPage(pageName) {
             break;
         case 'finance':
             content.innerHTML = renderFinancePage();
+            initFinancePage();
             break;
         case 'employee':
             content.innerHTML = `<div style="text-align:center;padding:100px;color:#999;">员工注册页面开发中...</div>`;

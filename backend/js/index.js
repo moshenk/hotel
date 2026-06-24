@@ -23,9 +23,9 @@ const todayIn = inRes[0].num;
     const emptyRoom = total - used;
     const checkRate = total === 0 ? 0 : (used / total * 100).toFixed(1);
 
-    // 4.今日营收：当天入住订单，排除无总价/取消（你订单status只有1、2，没有取消，直接统计）
-    const [incomeRes] = await db.query(`SELECT IFNULL(SUM(total_price),0) income FROM checkin WHERE DATE(checkin_time)=?`,[today]);
-    const todayIncome = incomeRes[0].income;
+    // 4.今日营收：从finance_daily读取，和财务页面共用一份数据
+    const [financeRow] = await db.query(`SELECT revenue FROM finance_daily WHERE stat_date = ?`,[today]);
+    const todayIncome = financeRow.length ? Number(financeRow[0].revenue) : 0;
 
         // 5.今日0-24时每小时入住人数曲线
     const [hourTrend] = await db.query(`

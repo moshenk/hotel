@@ -44,6 +44,25 @@ exports.addCheckin = async (req, res) => {
       VALUES (?,?,?,?,?,?)
     `, [orderNo, roomId, guestName, idCard, price, userId]);
     await conn.query('UPDATE room SET status = 2 WHERE id = ?', [roomId]);
+
+    // 新增：入住直接累加入住数量+营收金额
+    const statDate = new Date().toISOString().slice(0, 10);
+    const [existRow] = await conn.query(`SELECT id FROM finance_daily WHERE stat_date = ?`, [statDate]);
+    if (existRow.length > 0) {
+      // 已有今日统计，入住数+1，营收加上本次房费
+      await conn.query(`
+        UPDATE finance_daily
+        SET checkin_count = checkin_count + 1, revenue = revenue + ?
+        WHERE stat_date = ?
+      `, [price, statDate]);
+    } else {
+      // 今日第一条订单，初始化数据
+      await conn.query(`
+        INSERT INTO finance_daily(stat_date, checkin_count, checkout_count, revenue)
+        VALUES (?, 1, 0, ?)
+      `, [statDate, price]);
+    }
+
     await conn.commit();
     res.json({ code: 200, message: '入住办理成功' });
   } catch (err) {
@@ -63,29 +82,26 @@ exports.checkoutOrder = async (req, res) => {
     await conn.beginTransaction();
     const [order] = await conn.query('SELECT room_id, total_price FROM checkin WHERE id = ? AND status = 1', [orderId]);
     if(order.length === 0) return res.json({code:400,message:'订单不存在或已退房'});
-    // 修复：数据库字段是room_id，不是roomId
     const roomId = order[0].room_id;
-    const money = order[0].total_price;
 
-    // 更新订单为已退房
+    // 更新订单退房状态
     await conn.query(`UPDATE checkin SET status=2,checkout_time=NOW() WHERE id=?`, [orderId]);
-    // 更新房间为打扫中 status=1
+    // 更新房间为打扫中
     await conn.query('UPDATE room SET status = 1 WHERE id = ?', [roomId]);
-    console.log('退房更新房间ID：', roomId); // 打印日志，确认roomId是否正常
 
-    // 财务日报逻辑
+    // 仅更新今日退房数量，不修改营收（营收入住时已统计）
     const today = new Date().toISOString().slice(0,10);
-    const [exist] = await conn.query('SELECT id FROM finance_daily WHERE stat_date = ?', [today]);
-    if(exist.length > 0){
-      await conn.query(`UPDATE finance_daily SET checkout_count = checkout_count + 1, revenue = revenue + ? WHERE stat_date = ?`, [money, today]);
-    }else{
-      await conn.query(`INSERT INTO finance_daily(stat_date,checkin_count,checkout_count,revenue) VALUES (?,0,1,?)`, [today, money]);
-    }
+    await conn.query(`
+      UPDATE finance_daily
+      SET checkout_count = checkout_count + 1
+      WHERE stat_date = ?
+    `, [today]);
+
     await conn.commit();
     res.json({ code: 200, message: '退房成功，房间进入打扫状态' });
   } catch (err) {
     await conn.rollback();
-    console.error('退房事务失败：', err); // 打印完整错误
+    console.error('退房事务失败：', err);
     res.json({ code: 500, message: '退房失败：' + err.message });
   } finally {
     conn.release();
@@ -183,6 +199,49 @@ exports.getAllRoom = async (req, res) => {
   }
 };
 
+// 8. 获取财务页面数据（今日汇总+当月总营收+今日订单）
+exports.getTodayFinance = async (req, res) => {
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const now = new Date();
+    const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+
+    // 1. 今日财务统计
+    const [todayStat] = await pool.query(`
+      SELECT stat_date, checkin_count, checkout_count, revenue
+      FROM finance_daily WHERE stat_date = ?
+    `, [today]);
+    const total = todayStat.length ? todayStat[0] : { stat_date: today, checkin_count: 0, checkout_count: 0, revenue: 0.00 };
+
+    // 2. 当月全部营收总和
+    const [monthSum] = await pool.query(`
+      SELECT IFNULL(SUM(revenue),0) AS monthTotal
+      FROM finance_daily WHERE stat_date >= ?
+    `, [monthStart]);
+
+    // 3. 今日所有入住订单（关联房间）
+    const [orderList] = await pool.query(`
+      SELECT c.order_number, r.room_number, c.checkin_time, c.checkout_time, c.total_price
+      FROM checkin c
+      LEFT JOIN room r ON c.room_id = r.id
+      WHERE DATE(c.checkin_time) = CURDATE()
+      ORDER BY c.checkin_time DESC
+    `);
+
+    res.json({
+      code: 200,
+      data: {
+        total,
+        monthTotal: monthSum[0].monthTotal,
+        orderList
+      }
+    });
+  } catch (err) {
+    console.error("财务查询失败", err);
+    res.json({ code: 500, message: "财务数据查询异常" });
+  }
+};
+
 const express = require('express');
 const router = express.Router();
 
@@ -197,5 +256,6 @@ router.post('/room/clean/:id', exports.setRoomClean);
 router.get('/room/cleaning', exports.getCleaningRoom);
 router.get('/employee/list', exports.getEmployeeList);
 router.get('/room/all', exports.getAllRoom);
+router.get('/finance/today', exports.getTodayFinance);
 
 module.exports = router;
