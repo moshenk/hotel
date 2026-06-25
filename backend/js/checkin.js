@@ -174,7 +174,7 @@ exports.getCleaningRoom = async (req, res) => {
 // 查询所有员工
 exports.getEmployeeList = async (req, res) => {
   try {
-    const [list] = await pool.query("SELECT id,username FROM msk_user");
+    const [list] = await pool.query("SELECT id,username,role FROM msk_user");
     res.json({
       code: 200,
       data: list

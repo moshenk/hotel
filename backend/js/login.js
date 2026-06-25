@@ -19,7 +19,10 @@ router.post('/auth/login', async (req, res) => {
 
     let user;
     try {
-        const [rows] = await db.query('SELECT id,username FROM msk_user WHERE username=? AND password=?',[username,password]);
+        const [rows] = await db.query(
+            'SELECT id,username,role FROM msk_user WHERE username=? AND password=?',
+            [username,password]
+        );
         if(rows.length === 0){
             return res.json({ code: 400, message: '用户名或密码错误', data: null });
         }
@@ -41,9 +44,9 @@ router.post('/auth/login', async (req, res) => {
         data: {
             token,
             userInfo: {
-                userId: 1,
-                username: 'admin',
-                nickname: '系统管理员'
+                userId: user.id,
+                username: user.username,
+                role: user.role   // 把数据库里的角色发给前端
             }
         }
     });

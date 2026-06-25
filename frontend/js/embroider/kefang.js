@@ -141,8 +141,10 @@ async function bindCleanEvent(){
         const sRes = await fetch(`${window.BACKEND_URL}/api/employee/list`,{headers:{Authorization:`Bearer ${window.token}`}});
         const sJson = await sRes.json();
         staffSel.innerHTML = '<option value="">选择保洁员工</option>';
-        if(sJson.code===200) sJson.data.filter(x=>x.username!=='admin').forEach(u=>{
-            staffSel.innerHTML += `<option value="${u.id}">${u.username}</option>`
+        if(sJson.code===200) sJson.data.forEach(u=>{
+            if(u.role === 'common'){
+                staffSel.innerHTML += `<option value="${u.id}">${u.username}</option>`
+            }
         });
     }
 

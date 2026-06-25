@@ -18,14 +18,14 @@
             <li data-page="room">客房管理</li>
             <li data-page="status">房态面板</li>
             <li data-page="finance">财务明细</li>
-            <li data-page="employee">员工注册</li>
+            <!-- 增加ID -->
+            <li id="menuEmployee" data-page="employee">员工管理</li>
         </ul>
     </div>
 
     <div class="main">
         <div class="top-nav">
             <div class="tabs">
-                <button class="active">首页</button>
             </div>
             <div class="user-info">
                 <div class="avatar">a</div>
@@ -33,18 +33,27 @@
             </div>
         </div>
 
-        <!-- ✅ 只有这个content区域会被局部刷新 -->
         <div class="content" id="mainContent">
-            <!-- 这里的内容会被JS动态替换 -->
         </div>
     </div>
 
-    <!-- 新增：先加载所有页面渲染拆分文件 -->
-     <script src="./js/index.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            const user = JSON.parse(localStorage.getItem('hotel_user')) || {};
+            const menu = document.getElementById('menuEmployee');
+            if(user.role === 'common'){
+            menu.style.display = 'none';
+            }
+        })
+    </script>
+
+    <script src="./js/index.js"></script>
     <script src="./js/embroider/shouye.js"></script>
     <script src="./js/embroider/ruzhu.js"></script>
     <script src="./js/embroider/kefang.js"></script>
     <script src="./js/embroider/fangtai.js"></script>
     <script src="./js/embroider/caiwu.js"></script>
+    <script src="./js/embroider/enroll.js"></script>
+
 </body>
 </html>

@@ -54,6 +54,8 @@ async function handleLogin(e) {
         if (res.code === 200) {
             localStorage.setItem('hotel_token', res.data.token);
             localStorage.setItem('hotel_user', JSON.stringify(res.data.userInfo));
+            // 把角色单独存一份，方便首页读取
+            localStorage.setItem('hotel_role', res.data.userInfo.role);
             alert('登录成功，即将跳转到首页');
             window.location.href = './index.html';
         } else {
